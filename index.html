@@ -3,58 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Majestic Admin - Test</title>
+  <title>Test</title>
   <style>
-    body { 
-      font-family: 'Segoe UI', sans-serif; 
-      background: #0f172a; 
-      color: white; 
-      padding: 40px; 
-      text-align: center; 
-    }
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      background: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin: 20px;
-    }
+    body { font-family: Arial; background: #0f172a; color: white; padding: 50px; text-align: center; }
+    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 10px; }
   </style>
 </head>
 <body>
-  <h1>🔧 Тестовая версия</h1>
+  <h1>Тест авторизации</h1>
+  <button onclick="login()">Войти через Discord</button>
   
-  <button onclick="loginWithDiscord()">Войти через Discord</button>
-  
-  <div id="result"></div>
+  <div id="debug" style="margin-top: 30px; font-size: 18px;"></div>
 
   <script>
-    function loginWithDiscord() {
+    function login() {
       window.location.href = "https://majestic-admin-backend.onrender.com/login";
     }
 
-    // Показываем все параметры, которые пришли
     window.onload = () => {
       const params = new URLSearchParams(window.location.search);
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      
-      let text = "<h2>Статус:</h2>";
-      
-      if (params.has('username') || hashParams.has('username')) {
-        const username = params.get('username') || hashParams.get('username');
-        text += `<p style="color:#22c55e;font-size:24px;">✅ Успешный вход!<br>Ник: <b>${username}</b></p>`;
-      } else if (window.location.search || window.location.hash) {
-        text += `<p style="color:orange">Пришли параметры, но username не найден</p>`;
-        text += `<p>Search: ${window.location.search}</p>`;
-        text += `<p>Hash: ${window.location.hash}</p>`;
+      const debugDiv = document.getElementById('debug');
+
+      if (params.has('username')) {
+        debugDiv.innerHTML = `<span style="color:#22c55e">✅ УСПЕШНО!<br>Ник: ${params.get('username')}</span>`;
+      } else if (window.location.search) {
+        debugDiv.innerHTML = `Параметры пришли, но username нет.<br>URL: ${window.location.href}`;
       } else {
-        text += `<p>Это страница входа</p>`;
+        debugDiv.innerHTML = `Это стартовая страница`;
       }
-      
-      document.getElementById('result').innerHTML = text;
     };
   </script>
 </body>
