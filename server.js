@@ -18,10 +18,7 @@ app.get('/login', (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const code = req.query.code;
-  
-  if (!code) {
-    return res.redirect(FRONTEND_URL);
-  }
+  if (!code) return res.redirect(FRONTEND_URL);
 
   try {
     const tokenRes = await axios.post('https://discord.com/api/oauth2/token', 
@@ -29,27 +26,21 @@ app.get('/callback', async (req, res) => {
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
         grant_type: 'authorization_code',
-        code: code,
+        code,
         redirect_uri: REDIRECT_URI,
-      }), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }
-    );
+      }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
     const userRes = await axios.get('https://discord.com/api/users/@me', {
       headers: { Authorization: `Bearer ${tokenRes.data.access_token}` }
     });
 
     const user = userRes.data;
-    
-    // Главное изменение — передаём данные через hash (более надёжно)
-    res.redirect(`${FRONTEND_URL}#username=${encodeURIComponent(user.username)}&id=${user.id}`);
+    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}`);
 
   } catch (err) {
-    console.error(err);
-    res.redirect(FRONTEND_URL + "#error=auth_failed");
+    res.redirect(FRONTEND_URL + "?error=failed");
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend работает`));
+app.listen(PORT);
