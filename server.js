@@ -10,11 +10,7 @@ app.use(express.json());
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
-const FRONTEND_URL = "https://твой-фронтенд.onrender.com"; // ← Потом поменяешь
-
-app.get('/', (req, res) => {
-  res.send("✅ Backend работает");
-});
+const FRONTEND_URL = "https://majestic-admin.onrender.com";
 
 app.get('/login', (req, res) => {
   const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
@@ -43,9 +39,8 @@ app.get('/callback', async (req, res) => {
     });
 
     const user = userRes.data;
-
-    // Перенаправляем на фронтенд с данными пользователя
-    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}&discriminator=${user.discriminator || ''}&id=${user.id}&avatar=${user.avatar || ''}`);
+    
+    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}&id=${user.id}&avatar=${user.avatar || ''}`);
 
   } catch (err) {
     console.error(err);
@@ -54,4 +49,4 @@ app.get('/callback', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend запущен на порту ${PORT}`));
+app.listen(PORT, () => console.log(`Backend работает`));
