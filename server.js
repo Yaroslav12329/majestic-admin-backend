@@ -18,29 +18,42 @@ app.get('/login', (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const code = req.query.code;
-  if (!code) return res.redirect(FRONTEND_URL);
+  
+  if (!code) {
+    return res.redirect(FRONTEND_URL);
+  }
 
   try {
-    const tokenRes = await axios.post('https://discord.com/api/oauth2/token', 
+    // Получаем токен
+    const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', 
       new URLSearchParams({
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
         grant_type: 'authorization_code',
-        code,
+        code: code,
         redirect_uri: REDIRECT_URI,
-      }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+      }), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
 
-    const userRes = await axios.get('https://discord.com/api/users/@me', {
-      headers: { Authorization: `Bearer ${tokenRes.data.access_token}` }
+    // Получаем данные пользователя
+    const userResponse = await axios.get('https://discord.com/api/users/@me', {
+      headers: { Authorization: `Bearer ${tokenResponse.data.access_token}` }
     });
 
-    const user = userRes.data;
-    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}`);
+    const user = userResponse.data;
 
-  } catch (err) {
-    res.redirect(FRONTEND_URL + "?error=failed");
+    // Перенаправляем на фронтенд с данными
+    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}&id=${user.id}`);
+
+  } catch (error) {
+    console.error("Ошибка:", error.response ? error.response.data : error.message);
+    res.redirect(FRONTEND_URL + "?error=auth_failed");
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Backend запущен на порту ${PORT}`);
+});
