@@ -10,9 +10,10 @@ app.use(express.json());
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const FRONTEND_URL = "https://твой-фронтенд.onrender.com"; // ← Потом поменяешь
 
 app.get('/', (req, res) => {
-  res.send("✅ Majestic Admin Backend работает!");
+  res.send("✅ Backend работает");
 });
 
 app.get('/login', (req, res) => {
@@ -22,7 +23,7 @@ app.get('/login', (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const code = req.query.code;
-  if (!code) return res.send("Ошибка: нет кода");
+  if (!code) return res.redirect(FRONTEND_URL);
 
   try {
     const tokenRes = await axios.post('https://discord.com/api/oauth2/token', 
@@ -42,12 +43,15 @@ app.get('/callback', async (req, res) => {
     });
 
     const user = userRes.data;
-    res.send(`<h2>✅ Успешная авторизация!</h2><p>Привет, <b>${user.username}</b>!</p><p><a href="/">← Вернуться в админку</a></p>`);
+
+    // Перенаправляем на фронтенд с данными пользователя
+    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}&discriminator=${user.discriminator || ''}&id=${user.id}&avatar=${user.avatar || ''}`);
 
   } catch (err) {
-    res.send("Ошибка при входе через Discord");
+    console.error(err);
+    res.redirect(FRONTEND_URL + "?error=auth_failed");
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`));
+app.listen(PORT, () => console.log(`Backend запущен на порту ${PORT}`));
