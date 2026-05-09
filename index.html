@@ -3,149 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Majestic Admin</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+  <title>Majestic Admin - Test</title>
   <style>
-    :root {
-      --primary: #6366f1;
-      --bg: #0f172a;
-      --sidebar: #1e2937;
-      --text: #e2e8f0;
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      background: #0f172a; 
+      color: white; 
+      padding: 40px; 
+      text-align: center; 
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, #2b1b4e, #1a1a2e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .login-box {
-      background: rgba(15, 23, 42, 0.95);
-      padding: 50px 40px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-      max-width: 420px;
-    }
-
-    .discord-login-btn {
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
       background: #5865F2;
       color: white;
       border: none;
-      padding: 16px 32px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+      margin: 20px;
     }
-
-    .sidebar {
-      width: 70px;
-      background: var(--sidebar);
-      box-shadow: 4px 0 20px rgba(0,0,0,0.5);
-      padding: 20px 0;
-      display: flex;
-      flex-direction: column;
-      transition: width 0.4s;
-      overflow: hidden;
-    }
-    .sidebar:hover { width: 260px; }
-
-    .main { flex: 1; padding: 30px 40px; overflow-y: auto; }
-
-    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-
-  <!-- Login Screen -->
-  <div id="login-screen" class="login-screen">
-    <div class="login-box">
-      <h1><i class="fas fa-crown"></i> MAJESTIC</h1>
-      <p style="color:#94a3b8; margin:20px 0 30px;">Админ-панель</p>
-      <button onclick="loginWithDiscord()" class="discord-login-btn">
-        <i class="fab fa-discord"></i> Войти через Discord
-      </button>
-    </div>
-  </div>
-
-  <!-- Админ-панель -->
-  <div id="admin-panel" class="hidden" style="display:flex;width:100%;height:100vh;">
-    <div class="sidebar">
-      <div style="font-size:26px;font-weight:800;color:#6366f1;text-align:center;padding:20px 0;border-bottom:1px solid #475569;">MAJESTIC</div>
-      
-      <div style="margin-top:40px;">
-        <a href="#" onclick="showPage('dashboard')" style="display:flex;align-items:center;padding:14px 20px;color:#94a3b8;text-decoration:none;" class="active">
-          <i class="fas fa-home" style="width:30px"></i> Главная
-        </a>
-      </div>
-
-      <div style="margin-top:auto;padding:20px;border-top:1px solid #475569;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div id="avatar" style="width:50px;height:50px;background:#6366f1;border-radius:50%;"></div>
-          <div>
-            <strong id="username">Пользователь</strong>
-          </div>
-        </div>
-        <button onclick="logout()" style="margin-top:15px;width:100%;background:#ef4444;color:white;border:none;padding:10px;border-radius:8px;cursor:pointer;">Выйти</button>
-      </div>
-    </div>
-
-    <div class="main">
-      <h1>Панель управления</h1>
-      <div id="dashboard">
-        <h2>Добро пожаловать, <span id="welcome-name"></span>!</h2>
-      </div>
-    </div>
-  </div>
+  <h1>🔧 Тестовая версия</h1>
+  
+  <button onclick="loginWithDiscord()">Войти через Discord</button>
+  
+  <div id="result"></div>
 
   <script>
     function loginWithDiscord() {
       window.location.href = "https://majestic-admin-backend.onrender.com/login";
     }
 
-    function logout() {
-      window.location.href = "/";
-    }
-
-    function showPage(page) {
-      alert("Раздел " + page + " в разработке");
-    }
-
-    // Улучшенная обработка возврата
-    window.onload = function() {
+    // Показываем все параметры, которые пришли
+    window.onload = () => {
       const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
       
-      if (params.has('username')) {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('admin-panel').classList.remove('hidden');
-        
-        const username = params.get('username');
-        document.getElementById('username').textContent = username;
-        document.getElementById('welcome-name').textContent = username;
-        
-        // Очищаем URL от параметров
-        history.replaceState({}, document.title, "/");
+      let text = "<h2>Статус:</h2>";
+      
+      if (params.has('username') || hashParams.has('username')) {
+        const username = params.get('username') || hashParams.get('username');
+        text += `<p style="color:#22c55e;font-size:24px;">✅ Успешный вход!<br>Ник: <b>${username}</b></p>`;
+      } else if (window.location.search || window.location.hash) {
+        text += `<p style="color:orange">Пришли параметры, но username не найден</p>`;
+        text += `<p>Search: ${window.location.search}</p>`;
+        text += `<p>Hash: ${window.location.hash}</p>`;
+      } else {
+        text += `<p>Это страница входа</p>`;
       }
+      
+      document.getElementById('result').innerHTML = text;
     };
   </script>
 </body>
