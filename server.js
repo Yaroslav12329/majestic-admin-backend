@@ -5,7 +5,6 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -19,7 +18,10 @@ app.get('/login', (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const code = req.query.code;
-  if (!code) return res.redirect(FRONTEND_URL);
+  
+  if (!code) {
+    return res.redirect(FRONTEND_URL);
+  }
 
   try {
     const tokenRes = await axios.post('https://discord.com/api/oauth2/token', 
@@ -40,11 +42,12 @@ app.get('/callback', async (req, res) => {
 
     const user = userRes.data;
     
-    res.redirect(`${FRONTEND_URL}?username=${encodeURIComponent(user.username)}&id=${user.id}&avatar=${user.avatar || ''}`);
+    // Главное изменение — передаём данные через hash (более надёжно)
+    res.redirect(`${FRONTEND_URL}#username=${encodeURIComponent(user.username)}&id=${user.id}`);
 
   } catch (err) {
     console.error(err);
-    res.redirect(FRONTEND_URL + "?error=auth_failed");
+    res.redirect(FRONTEND_URL + "#error=auth_failed");
   }
 });
 
